@@ -2,4 +2,19 @@
     <string name="app_name">Yettel ZG</string>
 
     <string name="module_title">E-matrica</string>
+
+    <string name="yearly_vignettes_title">Országos matricák</string>
+    <string name="yearly_vignette_action_lbl">Éves vármegyei matricák</string>
+    
+    <string name="yearly_vignette_weekly_type">D1 - heti (10 napos)</string>
+    <string name="yearly_vignette_monthly_type">D1 - havi</string>
+    <string name="yearly_vignette_daily_type">D1 - napi (1 napos)</string>
+
+    <string name="yearly_vignette_weekly_price">6400</string>
+    <string name="yearly_vignette_monthly_price">10360</string>
+    <string name="yearly_vignette_daily_price">5150</string>
+    <string name="yearly_vignette_price_pl">%s Ft</string>
+
+    <string name="btn_payment_lbl">Vásárlás</string>
+
 </resources>

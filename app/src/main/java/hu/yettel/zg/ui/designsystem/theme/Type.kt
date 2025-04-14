@@ -58,4 +58,12 @@ val Typography =
             lineHeight = 20.sp,
             letterSpacing = 0.em,
         ),
+        // body copy 6, 7
+        bodySmall = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Light,
+            fontSize = 12.sp,
+            lineHeight = 16.em,
+            letterSpacing = 0.em,
+        ),
     )

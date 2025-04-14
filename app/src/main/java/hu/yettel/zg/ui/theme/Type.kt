@@ -44,12 +44,12 @@ val Typography =
         ),
         // body copy 5
         bodyLarge = TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.em,
-            ),
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.em,
+        ),
         // body copy 6, 7
         bodyMedium = TextStyle(
             fontFamily = FontFamily.Default,

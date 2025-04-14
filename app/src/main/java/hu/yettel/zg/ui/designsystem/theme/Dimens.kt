@@ -1,4 +1,4 @@
-package hu.yettel.zg.ui.theme
+package hu.yettel.zg.ui.designsystem.theme
 
 import androidx.compose.ui.unit.dp
 
@@ -8,11 +8,19 @@ object Dimens {
     val PaddingMedium = 24.dp
     val PaddingLarge = 32.dp
 
+    val ContentPadding = 14.dp
+
     val ButtonHeight = 48.dp
     val CardHeight = 72.dp
     val CheckboxSize = 20.dp
 
     val RowHeightMedium = 76.dp
 
-    val IconSize = 24.dp
+    val IconSizeSmall = 20.dp
+    val IconSizeMedium = 24.dp
+    val IconSizeLarge = 28.dp
+
+    val StrokeWidth = 2.dp
+
+    val AppBarHeight = 72.dp
 }

@@ -1,4 +1,4 @@
-package hu.yettel.zg.ui.theme
+package hu.yettel.zg.ui.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

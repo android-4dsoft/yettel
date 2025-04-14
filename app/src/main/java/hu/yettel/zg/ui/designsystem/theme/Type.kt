@@ -1,4 +1,4 @@
-package hu.yettel.zg.ui.theme
+package hu.yettel.zg.ui.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

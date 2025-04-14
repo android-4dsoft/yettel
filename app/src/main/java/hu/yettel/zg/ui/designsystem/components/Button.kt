@@ -15,15 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import hu.yettel.zg.ui.designsystem.theme.DarkBlue
 import hu.yettel.zg.ui.designsystem.theme.Dimens
-import hu.yettel.zg.ui.designsystem.theme.White
 import hu.yettel.zg.ui.designsystem.theme.YettelShapes
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 
 @Composable
 fun PrimaryButton(
     text: String,
+    isEnabled: Boolean = true,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -32,9 +31,12 @@ fun PrimaryButton(
         modifier = modifier
             .height(Dimens.ButtonHeight),
         shape = YettelShapes.large,
+        enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = DarkBlue,
-            contentColor = White,
+            containerColor = MaterialTheme.colorScheme.onSurface,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
+            disabledContentColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.onTertiaryContainer,
         ),
         contentPadding = PaddingValues(Dimens.ContentPadding),
         elevation = null,
@@ -47,6 +49,7 @@ fun PrimaryButton(
 @Composable
 fun SecondaryButton(
     text: String,
+    isEnabled: Boolean = true,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -55,34 +58,71 @@ fun SecondaryButton(
         modifier = modifier
             .height(Dimens.ButtonHeight),
         shape = YettelShapes.large,
+        enabled = isEnabled,
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = DarkBlue,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContentColor = MaterialTheme.colorScheme.surface,
         ),
-        border = BorderStroke(Dimens.StrokeWidth, DarkBlue),
+        border = BorderStroke(
+            Dimens.StrokeWidth,
+            if (isEnabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
+        ),
         interactionSource = remember { MutableInteractionSource() },
     ) {
         Text(text, style = MaterialTheme.typography.titleMedium)
     }
 }
 
-@Preview
+@Preview(name = "enabled button")
 @Composable
-fun PrimaryButtonPreview() {
+fun PrimaryEnabledButtonPreview() {
     YettelZGTheme {
         PrimaryButton(
             text = "Button",
+            isEnabled = true,
             onClick = {},
             modifier = Modifier.width(200.dp),
         )
     }
 }
 
-@Preview
+@Preview(name = "disabled button")
 @Composable
-fun SecondaryButtonPreview() {
+fun PrimaryDisabledButtonPreview() {
+    YettelZGTheme {
+        PrimaryButton(
+            text = "Button",
+            isEnabled = false,
+            onClick = {},
+            modifier = Modifier.width(200.dp),
+        )
+    }
+}
+
+@Preview(name = "enabled outline button")
+@Composable
+fun SecondaryEnabledButtonPreview() {
     YettelZGTheme {
         SecondaryButton(
             text = "Button",
+            isEnabled = true,
+            onClick = {},
+            modifier = Modifier.width(200.dp),
+        )
+    }
+}
+
+@Preview(name = "disabled outline button")
+@Composable
+fun SecondaryDisabledButtonPreview() {
+    YettelZGTheme {
+        SecondaryButton(
+            text = "Button",
+            isEnabled = false,
             onClick = {},
             modifier = Modifier.width(200.dp),
         )

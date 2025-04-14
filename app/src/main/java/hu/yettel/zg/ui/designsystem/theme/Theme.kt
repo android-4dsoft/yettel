@@ -16,6 +16,7 @@ private val LightColorScheme =
         onBackground = Black,
         surface = LightGray,
         onSurface = DarkBlue,
+        onTertiaryContainer = DarkGray,
     )
 
 @Composable

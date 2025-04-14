@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import hu.yettel.zg.R
 import hu.yettel.zg.ui.designsystem.theme.DarkBlue
 import hu.yettel.zg.ui.designsystem.theme.Dimens
-import hu.yettel.zg.ui.designsystem.theme.Lime
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 
 @Composable
@@ -34,7 +33,7 @@ fun YettelTopAppBar(
         modifier = Modifier
             .height(Dimens.AppBarHeight)
             .fillMaxWidth()
-            .background(Lime, shape = RoundedCornerShape(bottomStart = Dimens.PaddingMedium, bottomEnd = Dimens.PaddingMedium))
+            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(bottomStart = Dimens.PaddingMedium, bottomEnd = Dimens.PaddingMedium))
             .padding(horizontal = Dimens.PaddingLarge, vertical = Dimens.PaddingSmall),
         contentAlignment = Alignment.BottomStart,
     ) {

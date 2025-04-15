@@ -38,6 +38,9 @@ fun YettelNavGraph(
             onVignettesClick = {
                 navController.navigateToVignettes()
             },
+            onYearlyVignettesClick = {
+                navController.navigateToVignettes()
+            },
             onShowSnackbar = { message, actionLabel ->
                 showSnackbar(
                     snackbarHostState = snackbarHostState,

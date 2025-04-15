@@ -1,6 +1,7 @@
 package hu.yettel.zg.ui.screens.highway
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,10 +40,10 @@ import hu.yettel.zg.ui.designsystem.theme.YettelShapes
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 import hu.yettel.zg.utils.StringUtil
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HighwayScreen(
     onVignettesClick: () -> Unit,
+    onYearlyVignettesClick: () -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
     Scaffold(
@@ -56,6 +56,7 @@ fun HighwayScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,7 +66,9 @@ fun HighwayScreen(
                 owner = "Kovacs Istvan",
             )
             VignetteCard()
-            YearlyVignetteAction()
+            YearlyVignetteAction(
+                onCardClick = onYearlyVignettesClick,
+            )
         }
     }
 }
@@ -237,7 +240,7 @@ fun CustomRadioButton(
 }
 
 @Composable
-fun YearlyVignetteAction() {
+fun YearlyVignetteAction(onCardClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(
@@ -245,7 +248,10 @@ fun YearlyVignetteAction() {
                 end = Dimens.PaddingSmall,
                 top = Dimens.PaddingSmall,
             ).fillMaxWidth()
-            .height(Dimens.CardHeight),
+            .height(Dimens.CardHeight)
+            .clickable {
+                onCardClick()
+            },
         shape = YettelShapes.medium,
         elevation = CardDefaults.cardElevation(0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary),
@@ -309,7 +315,9 @@ fun YearlyVignetteItemPreview() {
 @Composable
 fun YearlyVignetteActionPreview() {
     YettelZGTheme {
-        YearlyVignetteAction()
+        YearlyVignetteAction(
+            onCardClick = {},
+        )
     }
 }
 
@@ -319,6 +327,7 @@ fun HighwayScreenPreview() {
     YettelZGTheme {
         HighwayScreen(
             onVignettesClick = {},
+            onYearlyVignettesClick = {},
             onShowSnackbar = { _, _ -> false },
         )
     }

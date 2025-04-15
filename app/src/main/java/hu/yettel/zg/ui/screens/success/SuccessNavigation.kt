@@ -1,3 +1,4 @@
+@file:Suppress("MatchingDeclarationName")
 package hu.yettel.zg.ui.screens.success
 
 import androidx.navigation.NavController
@@ -13,7 +14,8 @@ object SuccessRoute {
     override fun toString(): String = ROUTE
 }
 
-fun NavController.navigateToSuccess(navOptions: NavOptions? = null) = navigate(route = SuccessRoute.ROUTE, navOptions = navOptions)
+fun NavController.navigateToSuccess(navOptions: NavOptions? = null) =
+    navigate(route = SuccessRoute.ROUTE, navOptions = navOptions)
 
 fun NavGraphBuilder.successScreen(onDoneClick: () -> Unit) {
     composable(route = SuccessRoute.ROUTE) {

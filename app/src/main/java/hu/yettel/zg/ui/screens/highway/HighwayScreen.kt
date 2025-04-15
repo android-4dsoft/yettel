@@ -1,3 +1,6 @@
+@file:Suppress(
+    "TooManyFunctions"
+)
 package hu.yettel.zg.ui.screens.highway
 
 import androidx.compose.foundation.BorderStroke
@@ -40,6 +43,7 @@ import hu.yettel.zg.ui.designsystem.theme.YettelShapes
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 import hu.yettel.zg.utils.StringUtil
 
+@Suppress("UnusedParameter")
 @Composable
 fun HighwayScreen(
     onVignettesClick: () -> Unit,

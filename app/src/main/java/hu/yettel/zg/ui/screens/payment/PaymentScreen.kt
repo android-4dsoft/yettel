@@ -37,6 +37,7 @@ import hu.yettel.zg.ui.screens.vignettes.County
 import hu.yettel.zg.ui.screens.vignettes.counties
 import hu.yettel.zg.utils.StringUtil
 
+@Suppress("LongMethod", "UnusedParameter")
 @Composable
 fun PaymentScreen(
     onSuccessClick: () -> Unit,
@@ -138,7 +139,12 @@ fun PaymentScreen(
                     )
                     Spacer(Modifier.width(Dimens.PaddingXSmall))
                     Text(
-                        text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(stringResource(R.string.payment_screen_system_usage_price_lbl).toDouble())),
+                        text = stringResource(
+                            R.string.yearly_vignette_price_pl,
+                            StringUtil.formatPrice(
+                                stringResource(R.string.payment_screen_system_usage_price_lbl).toDouble()
+                            )
+                        ),
                         style = Typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
                     )
                 }
@@ -242,7 +248,7 @@ fun OrderInfoRow(
             style = Typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(3f),
+            modifier = Modifier.weight(weight = 3f),
         )
         Spacer(Modifier.width(Dimens.PaddingSmall))
         Text(

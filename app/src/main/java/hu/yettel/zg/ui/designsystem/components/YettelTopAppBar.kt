@@ -33,7 +33,13 @@ fun YettelTopAppBar(
         modifier = Modifier
             .height(Dimens.AppBarHeight)
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(bottomStart = Dimens.PaddingMedium, bottomEnd = Dimens.PaddingMedium))
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(
+                    bottomStart = Dimens.PaddingMedium,
+                    bottomEnd = Dimens.PaddingMedium
+                )
+            )
             .padding(horizontal = Dimens.PaddingLarge, vertical = Dimens.PaddingSmall),
         contentAlignment = Alignment.BottomStart,
     ) {

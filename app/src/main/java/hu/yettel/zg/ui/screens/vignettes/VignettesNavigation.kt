@@ -1,3 +1,4 @@
+@file:Suppress("MatchingDeclarationName")
 package hu.yettel.zg.ui.screens.vignettes
 
 import androidx.navigation.NavController
@@ -13,7 +14,8 @@ object VignettesRoute {
     override fun toString(): String = ROUTE
 }
 
-fun NavController.navigateToVignettes(navOptions: NavOptions? = null) = navigate(route = VignettesRoute.ROUTE, navOptions = navOptions)
+fun NavController.navigateToVignettes(navOptions: NavOptions? = null) =
+    navigate(route = VignettesRoute.ROUTE, navOptions = navOptions)
 
 fun NavGraphBuilder.vignettesScreen(
     onPaymentClick: () -> Unit,

@@ -49,6 +49,7 @@ import hu.yettel.zg.ui.designsystem.theme.Typography
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 import hu.yettel.zg.utils.StringUtil
 
+@Suppress("LongMethod", "UnusedParameter")
 @Composable
 fun VignettesScreen(
     onPaymentClick: () -> Unit,
@@ -241,6 +242,7 @@ fun HungaryMap(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    @Suppress("MagicNumber")
     val mapAspectRatio = 313f / 188f
 
     Box(
@@ -278,6 +280,7 @@ fun HungaryMap(
 /**
  * Get the resource ID for a county's vector drawable
  */
+@Suppress("CyclomaticComplexMethod")
 private fun getCountyVectorRes(countyId: String): Int =
     when (countyId) {
         "YEAR_11" -> R.drawable.year_11

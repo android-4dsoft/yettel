@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import hu.yettel.zg.ui.screens.highway.HighwayRoute
 import hu.yettel.zg.ui.screens.highway.highwayScreen
 import hu.yettel.zg.ui.screens.highway.navigateToHighway
+import hu.yettel.zg.ui.screens.payment.PaymentRoute
 import hu.yettel.zg.ui.screens.payment.navigateToPayment
 import hu.yettel.zg.ui.screens.payment.paymentScreen
 import hu.yettel.zg.ui.screens.success.navigateToSuccess
@@ -22,12 +23,13 @@ import hu.yettel.zg.ui.screens.vignettes.vignettesScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@Suppress("LongMethod", "UnusedParameter")
 @Composable
 fun YettelNavGraph(
     navController: NavHostController = rememberNavController(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    startDestination: String = HighwayRoute.ROUTE,
+    startDestination: String = PaymentRoute.ROUTE,
     modifier: Modifier = Modifier,
 ) {
     NavHost(

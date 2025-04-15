@@ -9,6 +9,7 @@
     <string name="yearly_vignette_weekly_type">D1 - heti (10 napos)</string>
     <string name="yearly_vignette_monthly_type">D1 - havi</string>
     <string name="yearly_vignette_daily_type">D1 - napi (1 napos)</string>
+    <string name="yearly_vignette_county_type">Éves vármegyei</string>
 
     <string name="yearly_vignette_weekly_price">6400</string>
     <string name="yearly_vignette_monthly_price">10360</string>
@@ -19,6 +20,15 @@
 
     <string name="vignettes_screen_title">Éves vármegyei matricák</string>
     <string name="amount_lbl">Fizetendő összeg</string>
-    <string name="btn_next">Tovább</string>
+    <string name="vignettes_screen_next_btn">Tovább</string>
+
+    <string name="payment_screen_title">Vásárlás megerősítése</string>
+    <string name="payment_screen_plate_lbl">Rendszám</string>
+    <string name="payment_screen_vignette_type_lbl">Matrica típusa</string>
+
+    <string name="payment_screen_system_usage_type_lbl">Rendszerhasználati díj</string>
+    <string name="payment_screen_system_usage_price_lbl">110</string>
+    <string name="payment_screen_next_btn">Tovább</string>
+    <string name="payment_screen_cancel_btn">Mégsem</string>
 
 </resources>

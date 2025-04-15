@@ -168,7 +168,7 @@ fun VignettesScreen(
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = stringResource(R.string.btn_next),
+                    text = stringResource(R.string.vignettes_screen_next_btn),
                     isEnabled = true,
                     onClick = onPaymentClick,
                 )

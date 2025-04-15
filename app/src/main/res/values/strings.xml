@@ -17,4 +17,8 @@
 
     <string name="btn_payment_lbl">Vásárlás</string>
 
+    <string name="vignettes_screen_title">Éves vármegyei matricák</string>
+    <string name="amount_lbl">Fizetendő összeg</string>
+    <string name="btn_next">Tovább</string>
+
 </resources>

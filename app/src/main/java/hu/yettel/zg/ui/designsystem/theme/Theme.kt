@@ -12,11 +12,12 @@ private val LightColorScheme =
         onSecondary = White,
         error = Orange,
         onError = White,
-        background = LightGreen,
+        background = White,
         onBackground = Black,
-        surface = LightGray,
+        surface = LightGreen,
         onSurface = DarkBlue,
         onTertiaryContainer = DarkGray,
+        tertiaryContainer = LightGray,
     )
 
 @Composable

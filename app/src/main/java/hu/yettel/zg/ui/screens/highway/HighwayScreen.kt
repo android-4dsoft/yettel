@@ -1,6 +1,7 @@
 @file:Suppress(
-    "TooManyFunctions"
+    "TooManyFunctions",
 )
+
 package hu.yettel.zg.ui.screens.highway
 
 import androidx.compose.foundation.BorderStroke

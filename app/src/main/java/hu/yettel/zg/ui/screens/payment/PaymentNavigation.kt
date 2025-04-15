@@ -1,4 +1,5 @@
-@file:Suppress("MatchingDeclarationName")
+@file:Suppress("MatchingDeclarationName", "MaxLineLength")
+
 package hu.yettel.zg.ui.screens.payment
 
 import androidx.navigation.NavController
@@ -14,8 +15,7 @@ object PaymentRoute {
     override fun toString(): String = ROUTE
 }
 
-fun NavController.navigateToPayment(navOptions: NavOptions? = null) =
-    navigate(route = PaymentRoute.ROUTE, navOptions = navOptions)
+fun NavController.navigateToPayment(navOptions: NavOptions? = null) = navigate(route = PaymentRoute.ROUTE, navOptions = navOptions)
 
 fun NavGraphBuilder.paymentScreen(
     onSuccessClick: () -> Unit,

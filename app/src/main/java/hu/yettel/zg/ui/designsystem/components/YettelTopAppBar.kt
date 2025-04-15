@@ -37,10 +37,9 @@ fun YettelTopAppBar(
                 color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(
                     bottomStart = Dimens.PaddingMedium,
-                    bottomEnd = Dimens.PaddingMedium
-                )
-            )
-            .padding(horizontal = Dimens.PaddingLarge, vertical = Dimens.PaddingSmall),
+                    bottomEnd = Dimens.PaddingMedium,
+                ),
+            ).padding(horizontal = Dimens.PaddingLarge, vertical = Dimens.PaddingSmall),
         contentAlignment = Alignment.BottomStart,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

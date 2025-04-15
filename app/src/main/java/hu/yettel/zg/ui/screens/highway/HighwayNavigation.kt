@@ -1,4 +1,5 @@
-@file:Suppress("MatchingDeclarationName")
+@file:Suppress("MatchingDeclarationName", "MaxLineLength")
+
 package hu.yettel.zg.ui.screens.highway
 
 import androidx.navigation.NavController
@@ -14,8 +15,7 @@ object HighwayRoute {
     override fun toString(): String = ROUTE
 }
 
-fun NavController.navigateToHighway(navOptions: NavOptions? = null) =
-    navigate(route = HighwayRoute.ROUTE, navOptions = navOptions)
+fun NavController.navigateToHighway(navOptions: NavOptions? = null) = navigate(route = HighwayRoute.ROUTE, navOptions = navOptions)
 
 fun NavGraphBuilder.highwayScreen(
     onVignettesClick: () -> Unit,

@@ -142,8 +142,8 @@ fun PaymentScreen(
                         text = stringResource(
                             R.string.yearly_vignette_price_pl,
                             StringUtil.formatPrice(
-                                stringResource(R.string.payment_screen_system_usage_price_lbl).toDouble()
-                            )
+                                stringResource(R.string.payment_screen_system_usage_price_lbl).toDouble(),
+                            ),
                         ),
                         style = Typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
                     )

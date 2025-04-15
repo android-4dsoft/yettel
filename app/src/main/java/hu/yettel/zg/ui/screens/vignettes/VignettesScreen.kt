@@ -242,6 +242,7 @@ fun HungaryMap(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+
     @Suppress("MagicNumber")
     val mapAspectRatio = 313f / 188f
 

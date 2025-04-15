@@ -31,4 +31,7 @@
     <string name="payment_screen_next_btn">Tovább</string>
     <string name="payment_screen_cancel_btn">Mégsem</string>
 
+    <string name="success_screen_msg_lbl">A matricákat\nsikeresen\nkifizetted!</string>
+    <string name="success_screen_done_btn">Rendben</string>
+
 </resources>

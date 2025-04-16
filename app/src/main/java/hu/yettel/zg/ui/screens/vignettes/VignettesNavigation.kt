@@ -39,7 +39,6 @@ fun NavGraphBuilder.vignettesScreen(
         VignettesScreen(
             onPaymentClick = onPaymentClick,
             onBackClick = onBackClick,
-            showWarning = {},
             onShowSnackbar = onShowSnackbar,
         )
     }

@@ -26,8 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,42 +43,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.yettel.zg.R
+import hu.yettel.zg.ui.designsystem.components.ErrorState
+import hu.yettel.zg.ui.designsystem.components.LoadingState
 import hu.yettel.zg.ui.designsystem.components.PrimaryButton
 import hu.yettel.zg.ui.designsystem.components.YettelTopAppBar
 import hu.yettel.zg.ui.designsystem.theme.Dimens
 import hu.yettel.zg.ui.designsystem.theme.Typography
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 import hu.yettel.zg.utils.StringUtil
+import kotlinx.coroutines.launch
 
 @Suppress("LongMethod", "UnusedParameter")
 @Composable
 fun VignettesScreen(
     onPaymentClick: () -> Unit,
     onBackClick: () -> Unit,
-    showWarning: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
+    viewModel: VignettesViewModel = hiltViewModel(),
 ) {
-    val selectedCounties = remember { mutableStateListOf<VignetteCounty>() }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    val notAdjacentWarning = stringResource(R.string.error_not_adjacent)
 
-    fun toggleCountySelection(vignetteCounty: VignetteCounty) {
-        if (selectedCounties.isNotEmpty() && !selectedCounties.contains(vignetteCounty)) {
-            val isAdjacent = isCountyAdjacentToSelected(
-                vignetteCounty.id,
-                selectedCounties.map { it.id },
-                getCountyAdjacencyMap(),
-            )
-
-            if (!isAdjacent) {
-                showWarning("A kiválasztott vármegyék nem határosak egymással.")
-                return
-            }
-        }
-
-        if (selectedCounties.any { it.id == vignetteCounty.id }) {
-            selectedCounties.removeIf { it.id == vignetteCounty.id }
-        } else {
-            selectedCounties.add(vignetteCounty)
+    // Handle error messages
+    LaunchedEffect(uiState) {
+        if (uiState is VignettesUiState.Error) {
+            onShowSnackbar((uiState as VignettesUiState.Error).message, null)
         }
     }
 
@@ -89,92 +84,156 @@ fun VignettesScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = Dimens.PaddingSmall,
-                vertical = Dimens.PaddingMedium,
-            ),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
-        ) {
-            item {
-                Text(
-                    text = stringResource(R.string.vignettes_screen_title),
-                    style = Typography.headlineMedium.copy(color = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier.padding(horizontal = Dimens.PaddingSmall),
+        when (uiState) {
+            is VignettesUiState.Loading -> {
+                LoadingState(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                 )
             }
-
-            item {
-                HungaryMap(
-                    counties = counties,
-                    selectedCounties = selectedCounties.toList(),
+            is VignettesUiState.Error -> {
+                ErrorState(
+                    message = (uiState as VignettesUiState.Error).message,
+                    onRetry = { /* Could add retry functionality */ },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Dimens.PaddingSmall),
+                        .fillMaxSize()
+                        .padding(paddingValues),
                 )
             }
-
-            items(
-                counties.filter { it.id.startsWith("YEAR_") },
-                key = { it.id },
-            ) { county ->
-                VignetteCountyItem(
-                    modifier = Modifier
-                        .padding(horizontal = Dimens.PaddingSmall)
-                        .fillMaxWidth()
-                        .height(Dimens.RowHeightExtraSmall),
-                    vignetteCounty = county,
-                    onCheckStateChanged = {
-                        toggleCountySelection(county)
+            is VignettesUiState.Success -> {
+                val successState = uiState as VignettesUiState.Success
+                VignettesContent(
+                    state = successState,
+                    onCountyToggle = { countyId ->
+                        viewModel.toggleCountySelection(countyId)
                     },
-                    isChecked = selectedCounties.contains(county),
+                    onPaymentClick = onPaymentClick,
+                    onShowNotAdjacentWarning = {
+                        coroutineScope.launch {
+                            onShowSnackbar(notAdjacentWarning, null)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                 )
             }
+        }
+    }
+}
 
-            item {
-                Column(
+@Suppress("LongMethod")
+@Composable
+fun VignettesContent(
+    state: VignettesUiState.Success,
+    onCountyToggle: (String) -> Unit,
+    onPaymentClick: () -> Unit,
+    onShowNotAdjacentWarning: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            horizontal = Dimens.PaddingSmall,
+            vertical = Dimens.PaddingMedium,
+        ),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+    ) {
+        item {
+            Text(
+                text = stringResource(R.string.vignettes_screen_title),
+                style = Typography.headlineMedium.copy(color = MaterialTheme.colorScheme.secondary),
+                modifier = Modifier.padding(horizontal = Dimens.PaddingSmall),
+            )
+        }
+
+        item {
+            HungaryMap(
+                counties = state.counties,
+                selectedCounties = state.selectedCounties,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimens.PaddingSmall),
+            )
+        }
+
+        items(
+            state.counties.filter { it.id.startsWith("YEAR_") || it.id == "BP" },
+            key = { it.id },
+        ) { county ->
+            VignetteCountyItem(
+                modifier = Modifier
+                    .padding(horizontal = Dimens.PaddingSmall)
+                    .fillMaxWidth()
+                    .height(Dimens.RowHeightExtraSmall),
+                vignetteCounty = county,
+                onCheckStateChanged = {
+                    // Check if we need to handle adjacency warning
+                    if (!county.isSelected && state.selectedCounties.isNotEmpty()) {
+                        val isAdjacent = isCountyAdjacentToSelected(
+                            county.id,
+                            state.selectedCounties.map { it.id },
+                            getCountyAdjacencyMap(),
+                        )
+
+                        if (!isAdjacent) {
+                            onShowNotAdjacentWarning()
+                            return@VignetteCountyItem
+                        }
+                    }
+
+                    onCountyToggle(county.id)
+                },
+                isChecked = county.isSelected,
+            )
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimens.PaddingSmall),
+            ) {
+                HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Dimens.PaddingSmall),
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                    )
-                    Spacer(Modifier.height(Dimens.PaddingMedium))
-                    Text(
-                        text = stringResource(R.string.amount_lbl),
-                        style = Typography.bodySmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary,
-                        ),
-                    )
-                    Spacer(Modifier.height(Dimens.PaddingXSmall))
-                    Text(
-                        text = "123 000 Ft",
-                        style = Typography.headlineLarge.copy(
-                            fontSize = 40.sp,
-                            lineHeight = 48.sp,
-                            color = MaterialTheme.colorScheme.secondary,
-                        ),
-                    )
-                }
-            }
-            item {
-                Spacer(Modifier.height(Dimens.PaddingLarge))
-                PrimaryButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = stringResource(R.string.vignettes_screen_next_btn),
-                    isEnabled = true,
-                    onClick = onPaymentClick,
+                        .height(1.dp),
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                )
+                Spacer(Modifier.height(Dimens.PaddingMedium))
+                Text(
+                    text = stringResource(R.string.amount_lbl),
+                    style = Typography.bodySmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary,
+                    ),
+                )
+                Spacer(Modifier.height(Dimens.PaddingXSmall))
+                Text(
+                    text = stringResource(
+                        R.string.yearly_vignette_price_pl,
+                        StringUtil.formatPrice(state.totalCost),
+                    ),
+                    style = Typography.headlineLarge.copy(
+                        fontSize = 40.sp,
+                        lineHeight = 48.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                    ),
                 )
             }
+        }
+        item {
+            Spacer(Modifier.height(Dimens.PaddingLarge))
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = stringResource(R.string.vignettes_screen_next_btn),
+                isEnabled = state.selectedCounties.isNotEmpty(),
+                onClick = onPaymentClick,
+            )
         }
     }
 }
@@ -198,7 +257,9 @@ fun VignetteCountyItem(
         VignetteItemCheckbox(
             modifier = Modifier,
             checked = isChecked,
-            onCheckedChange = {}, // no-op to avoid double toggle
+            onCheckedChange = {
+                onCheckStateChanged(!isChecked)
+            },
         )
         Spacer(Modifier.width(Dimens.PaddingXSmall))
         Text(
@@ -315,13 +376,49 @@ fun VignetteCountyItemPreview() {
 
 @Preview
 @Composable
-fun VignettesScreenPreview() {
+fun VignettesContentPreview() {
     YettelZGTheme {
-        VignettesScreen(
-            onPaymentClick = {},
-            onBackClick = {},
-            showWarning = {},
-            onShowSnackbar = { _, _ -> false },
+        val sampleCounties = listOf(
+            VignetteCounty(
+                id = "BP",
+                name = "Budapest",
+                cost = 5450.0,
+                isSelected = true,
+            ),
+            VignetteCounty(
+                id = "YEAR_11",
+                name = "Bács-Kiskun",
+                cost = 5450.0,
+                isSelected = false,
+            ),
+            VignetteCounty(
+                id = "YEAR_16",
+                name = "Fejér",
+                cost = 5450.0,
+                isSelected = true,
+            ),
+            VignetteCounty(
+                id = "YEAR_23",
+                name = "Pest",
+                cost = 5450.0,
+                isSelected = false,
+            ),
         )
+
+        val selectedCounties = sampleCounties.filter { it.isSelected }
+
+        Surface {
+            VignettesContent(
+                state = VignettesUiState.Success(
+                    counties = sampleCounties,
+                    selectedCounties = selectedCounties,
+                    totalCost = 10900.0,
+                ),
+                onCountyToggle = {},
+                onPaymentClick = {},
+                onShowNotAdjacentWarning = {},
+                modifier = Modifier.padding(0.dp),
+            )
+        }
     }
 }

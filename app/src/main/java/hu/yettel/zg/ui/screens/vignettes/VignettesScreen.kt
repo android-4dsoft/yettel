@@ -57,12 +57,12 @@ fun VignettesScreen(
     showWarning: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
-    val selectedCounties = remember { mutableStateListOf<County>() }
+    val selectedCounties = remember { mutableStateListOf<VignetteCounty>() }
 
-    fun toggleCountySelection(county: County) {
-        if (selectedCounties.isNotEmpty() && !selectedCounties.contains(county)) {
+    fun toggleCountySelection(vignetteCounty: VignetteCounty) {
+        if (selectedCounties.isNotEmpty() && !selectedCounties.contains(vignetteCounty)) {
             val isAdjacent = isCountyAdjacentToSelected(
-                county.id,
+                vignetteCounty.id,
                 selectedCounties.map { it.id },
                 getCountyAdjacencyMap(),
             )
@@ -73,10 +73,10 @@ fun VignettesScreen(
             }
         }
 
-        if (selectedCounties.any { it.id == county.id }) {
-            selectedCounties.removeIf { it.id == county.id }
+        if (selectedCounties.any { it.id == vignetteCounty.id }) {
+            selectedCounties.removeIf { it.id == vignetteCounty.id }
         } else {
-            selectedCounties.add(county)
+            selectedCounties.add(vignetteCounty)
         }
     }
 
@@ -126,7 +126,7 @@ fun VignettesScreen(
                         .padding(horizontal = Dimens.PaddingSmall)
                         .fillMaxWidth()
                         .height(Dimens.RowHeightExtraSmall),
-                    county = county,
+                    vignetteCounty = county,
                     onCheckStateChanged = {
                         toggleCountySelection(county)
                     },
@@ -182,7 +182,7 @@ fun VignettesScreen(
 @Composable
 fun VignetteCountyItem(
     modifier: Modifier = Modifier,
-    county: County,
+    vignetteCounty: VignetteCounty,
     isChecked: Boolean,
     onCheckStateChanged: (Boolean) -> Unit,
 ) {
@@ -202,7 +202,7 @@ fun VignetteCountyItem(
         )
         Spacer(Modifier.width(Dimens.PaddingXSmall))
         Text(
-            text = county.name,
+            text = vignetteCounty.name,
             style = Typography.bodyLarge.copy(
                 fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.secondary,
@@ -213,7 +213,7 @@ fun VignetteCountyItem(
         )
         Spacer(Modifier.width(Dimens.PaddingXSmall))
         Text(
-            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(county.cost)),
+            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(vignetteCounty.cost)),
             style = Typography.headlineSmall.copy(color = MaterialTheme.colorScheme.secondary),
         )
     }
@@ -238,8 +238,8 @@ fun VignetteItemCheckbox(
 
 @Composable
 fun HungaryMap(
-    counties: List<County>,
-    selectedCounties: List<County>,
+    counties: List<VignetteCounty>,
+    selectedCounties: List<VignetteCounty>,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -285,8 +285,8 @@ fun HungaryMapPreview() {
     YettelZGTheme {
         Surface {
             val selectedCounties = listOf(
-                County("YEAR_11", "Bács-Kiskun"),
-                County("YEAR_16", "Fejér"),
+                VignetteCounty("YEAR_11", "Bács-Kiskun"),
+                VignetteCounty("YEAR_16", "Fejér"),
             )
 
             HungaryMap(
@@ -306,7 +306,7 @@ fun VignetteCountyItemPreview() {
             modifier = Modifier
                 .height(Dimens.RowHeightExtraSmall)
                 .fillMaxWidth(),
-            county = counties.last(),
+            vignetteCounty = counties.last(),
             isChecked = true,
             onCheckStateChanged = {},
         )

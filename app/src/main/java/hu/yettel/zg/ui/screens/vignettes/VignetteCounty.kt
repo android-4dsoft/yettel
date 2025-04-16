@@ -2,33 +2,34 @@ package hu.yettel.zg.ui.screens.vignettes
 
 import hu.yettel.zg.R
 
-data class County(
+data class VignetteCounty(
     val id: String, // County ID (e.g., "YEAR_11")
     val name: String, // County name (e.g., "Bács-Kiskun")
     val cost: Double = 5450.0, // Cost of vignette for this county
+    val isSelected: Boolean = false,
 )
 
 val counties = listOf(
-    County("BP", "Budapest"),
-    County("YEAR_11", "Bács-Kiskun"),
-    County("YEAR_12", "Baranya"),
-    County("YEAR_13", "Békés"),
-    County("YEAR_14", "Borsod-Abaúj-Zemplén"),
-    County("YEAR_15", "Csongrád"),
-    County("YEAR_16", "Fejér"),
-    County("YEAR_17", "Győr-Moson-Sopron"),
-    County("YEAR_18", "Hajdú-Bihar"),
-    County("YEAR_19", "Heves"),
-    County("YEAR_20", "Jász-Nagykun-Szolnok"),
-    County("YEAR_21", "Komárom-Esztergom"),
-    County("YEAR_22", "Nógrád"),
-    County("YEAR_23", "Pest"),
-    County("YEAR_24", "Somogy"),
-    County("YEAR_25", "Szabolcs-Szatmár-Bereg"),
-    County("YEAR_26", "Tolna"),
-    County("YEAR_27", "Vas"),
-    County("YEAR_28", "Veszprém"),
-    County("YEAR_29", "Zala"),
+    VignetteCounty("BP", "Budapest"),
+    VignetteCounty("YEAR_11", "Bács-Kiskun"),
+    VignetteCounty("YEAR_12", "Baranya"),
+    VignetteCounty("YEAR_13", "Békés"),
+    VignetteCounty("YEAR_14", "Borsod-Abaúj-Zemplén"),
+    VignetteCounty("YEAR_15", "Csongrád"),
+    VignetteCounty("YEAR_16", "Fejér"),
+    VignetteCounty("YEAR_17", "Győr-Moson-Sopron"),
+    VignetteCounty("YEAR_18", "Hajdú-Bihar"),
+    VignetteCounty("YEAR_19", "Heves"),
+    VignetteCounty("YEAR_20", "Jász-Nagykun-Szolnok"),
+    VignetteCounty("YEAR_21", "Komárom-Esztergom"),
+    VignetteCounty("YEAR_22", "Nógrád"),
+    VignetteCounty("YEAR_23", "Pest"),
+    VignetteCounty("YEAR_24", "Somogy"),
+    VignetteCounty("YEAR_25", "Szabolcs-Szatmár-Bereg"),
+    VignetteCounty("YEAR_26", "Tolna"),
+    VignetteCounty("YEAR_27", "Vas"),
+    VignetteCounty("YEAR_28", "Veszprém"),
+    VignetteCounty("YEAR_29", "Zala"),
 )
 
 /**

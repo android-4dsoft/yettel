@@ -33,7 +33,7 @@ import hu.yettel.zg.ui.designsystem.components.YettelTopAppBar
 import hu.yettel.zg.ui.designsystem.theme.Dimens
 import hu.yettel.zg.ui.designsystem.theme.Typography
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
-import hu.yettel.zg.ui.screens.vignettes.County
+import hu.yettel.zg.ui.screens.vignettes.VignetteCounty
 import hu.yettel.zg.ui.screens.vignettes.counties
 import hu.yettel.zg.utils.StringUtil
 
@@ -116,7 +116,7 @@ fun PaymentScreen(
                             horizontal = Dimens.PaddingSmall,
                         ).fillMaxWidth()
                         .height(Dimens.RowHeightExtraSmall),
-                    county = county,
+                    vignetteCounty = county,
                 )
             }
             item {
@@ -210,14 +210,14 @@ fun PaymentScreen(
 @Composable
 fun PaymentCountyItem(
     modifier: Modifier = Modifier,
-    county: County,
+    vignetteCounty: VignetteCounty,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = county.name,
+            text = vignetteCounty.name,
             style = Typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.secondary,
             ),
@@ -227,7 +227,7 @@ fun PaymentCountyItem(
         )
         Spacer(Modifier.width(Dimens.PaddingXSmall))
         Text(
-            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(county.cost)),
+            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(vignetteCounty.cost)),
             style = Typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
         )
     }

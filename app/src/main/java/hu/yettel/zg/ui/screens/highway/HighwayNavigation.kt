@@ -18,7 +18,7 @@ object HighwayRoute {
 fun NavController.navigateToHighway(navOptions: NavOptions? = null) = navigate(route = HighwayRoute.ROUTE, navOptions = navOptions)
 
 fun NavGraphBuilder.highwayScreen(
-    onYearlyVignettesClick: () -> Unit,
+    onYearlyVignettesClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
     composable(route = HighwayRoute.ROUTE) {

@@ -36,8 +36,10 @@ fun YettelNavGraph(
         startDestination = startDestination,
     ) {
         highwayScreen(
-            onYearlyVignettesClick = {
-                navController.navigateToVignettes()
+            onYearlyVignettesClick = { category ->
+                navController.navigateToVignettes(
+                    category = category,
+                )
             },
             onShowSnackbar = { message, actionLabel ->
                 showSnackbar(

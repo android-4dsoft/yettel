@@ -56,7 +56,7 @@ import hu.yettel.zg.utils.StringUtil
 
 @Composable
 fun HighwayScreen(
-    onYearlyVignettesClick: () -> Unit,
+    onYearlyVignettesClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
     viewModel: HighwayViewModel = hiltViewModel(),
 ) {
@@ -150,7 +150,7 @@ fun ErrorState(
 fun HighwayContent(
     state: HighwayUiState.Success,
     onVignetteTypeSelect: (VignetteTypeEnum) -> Unit,
-    onYearlyVignettesClick: () -> Unit,
+    onYearlyVignettesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -165,7 +165,11 @@ fun HighwayContent(
             onVignetteTypeSelect = onVignetteTypeSelect,
         )
         if (state.hasYearlyVignette) {
-            YearlyVignetteAction(onCardClick = onYearlyVignettesClick)
+            YearlyVignetteAction(
+                onCardClick = {
+                    onYearlyVignettesClick(state.vehicle.type)
+                },
+            )
         }
     }
 }

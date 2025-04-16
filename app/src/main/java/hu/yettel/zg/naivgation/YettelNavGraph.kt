@@ -13,7 +13,6 @@ import androidx.navigation.compose.rememberNavController
 import hu.yettel.zg.ui.screens.highway.HighwayRoute
 import hu.yettel.zg.ui.screens.highway.highwayScreen
 import hu.yettel.zg.ui.screens.highway.navigateToHighway
-import hu.yettel.zg.ui.screens.payment.PaymentRoute
 import hu.yettel.zg.ui.screens.payment.navigateToPayment
 import hu.yettel.zg.ui.screens.payment.paymentScreen
 import hu.yettel.zg.ui.screens.success.navigateToSuccess
@@ -29,7 +28,7 @@ fun YettelNavGraph(
     navController: NavHostController = rememberNavController(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    startDestination: String = PaymentRoute.ROUTE,
+    startDestination: String = HighwayRoute.ROUTE,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -37,9 +36,6 @@ fun YettelNavGraph(
         startDestination = startDestination,
     ) {
         highwayScreen(
-            onVignettesClick = {
-                navController.navigateToVignettes()
-            },
             onYearlyVignettesClick = {
                 navController.navigateToVignettes()
             },

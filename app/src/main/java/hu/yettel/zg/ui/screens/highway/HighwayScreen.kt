@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,6 +45,8 @@ import hu.yettel.zg.R
 import hu.yettel.zg.domain.model.LocalizedName
 import hu.yettel.zg.domain.model.Vehicle
 import hu.yettel.zg.domain.model.VignetteTypeEnum
+import hu.yettel.zg.ui.designsystem.components.ErrorState
+import hu.yettel.zg.ui.designsystem.components.LoadingState
 import hu.yettel.zg.ui.designsystem.components.PrimaryButton
 import hu.yettel.zg.ui.designsystem.components.YettelTopAppBar
 import hu.yettel.zg.ui.designsystem.theme.Dimens
@@ -108,41 +109,6 @@ fun HighwayScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun LoadingState(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-fun ErrorState(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.padding(Dimens.PaddingMedium),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = message,
-            style = Typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error,
-        )
-        Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
-        PrimaryButton(
-            text = "Újra",
-            isEnabled = true,
-            onClick = onRetry,
-        )
     }
 }
 

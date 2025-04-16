@@ -179,7 +179,7 @@ fun VehicleCard(vehicle: Vehicle) {
                     verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall), // Push top and bottom apart
                 ) {
                     Text(
-                        text = vehicle.licensePlate,
+                        text = vehicle.licensePlate.uppercase(),
                         style = Typography.bodyLarge.copy(color = MaterialTheme.colorScheme.secondary),
                     )
                     Text(

@@ -171,7 +171,7 @@ class HighwayViewModel
         ): List<VignetteType> {
             val vignetteTypes = mutableListOf<VignetteType>()
 
-            listOf(VignetteTypeEnum.DAY, VignetteTypeEnum.WEEK, VignetteTypeEnum.MONTH).forEach { typeEnum ->
+            listOf(VignetteTypeEnum.WEEK, VignetteTypeEnum.MONTH, VignetteTypeEnum.DAY).forEach { typeEnum ->
                 val matchingVignette = vignettes.find { vignette ->
                     vignette.types.contains(typeEnum.apiValue)
                 }
@@ -182,7 +182,7 @@ class HighwayViewModel
                             type = typeEnum,
                             displayName = category.vignetteCategory,
                             price = it.cost,
-                            isSelected = typeEnum == VignetteTypeEnum.MONTH,
+                            isSelected = typeEnum == VignetteTypeEnum.WEEK,
                         ),
                     )
                 }

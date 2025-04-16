@@ -57,7 +57,7 @@ fun getCountyVectorRes(countyId: String): Int =
         "YEAR_27" -> R.drawable.year_27
         "YEAR_28" -> R.drawable.year_28
         "YEAR_29" -> R.drawable.year_29
-        else -> R.drawable.bp
+        else -> -1
     }
 
 fun getCountyAdjacencyMap(): Map<String, List<String>> =
@@ -81,7 +81,6 @@ fun getCountyAdjacencyMap(): Map<String, List<String>> =
         "YEAR_27" to listOf("YEAR_17", "YEAR_28", "YEAR_29"),
         "YEAR_28" to listOf("YEAR_16", "YEAR_17", "YEAR_21", "YEAR_24", "YEAR_27", "YEAR_29"),
         "YEAR_29" to listOf("YEAR_24", "YEAR_27", "YEAR_28"),
-        "BP" to listOf("YEAR_23"), // Budapest is adjacent to Pest county
     )
 
 fun isCountyAdjacentToSelected(

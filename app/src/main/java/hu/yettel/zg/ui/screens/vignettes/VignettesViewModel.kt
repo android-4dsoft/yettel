@@ -120,7 +120,9 @@ class VignettesViewModel
                     selectedCounties = emptyList(),
                     totalCost = 0.0,
                 )
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            } catch (
+                @Suppress("TooGenericExceptionCaught") e: Exception
+            ) {
                 Timber.e(e, "Error processing highway info")
                 _uiState.value = VignettesUiState.Error("Failed to process county data: ${e.message}")
             }

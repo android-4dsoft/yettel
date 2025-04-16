@@ -2,6 +2,7 @@
 
 package hu.yettel.zg.ui.screens.payment
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -23,10 +24,15 @@ fun NavGraphBuilder.paymentScreen(
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
     composable(route = PaymentRoute.ROUTE) {
+        val viewModel: PaymentViewModel = hiltViewModel()
         PaymentScreen(
-            onSuccessClick = onSuccessClick,
+            onSuccessClick = {
+                viewModel.clearSelectedCounties()
+                onSuccessClick()
+            },
             onBackClick = onBackClick,
             onShowSnackbar = onShowSnackbar,
+            viewModel = viewModel,
         )
     }
 }

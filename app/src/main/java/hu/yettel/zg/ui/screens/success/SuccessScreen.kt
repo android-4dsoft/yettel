@@ -1,5 +1,6 @@
 package hu.yettel.zg.ui.screens.success
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,10 @@ import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 
 @Composable
 fun SuccessScreen(onDoneClick: () -> Unit) {
+    BackHandler(enabled = true) {
+        // No-op: Back press is intercepted and does nothing
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

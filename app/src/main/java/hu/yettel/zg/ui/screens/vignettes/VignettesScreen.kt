@@ -87,6 +87,7 @@ fun VignettesScreen(
                 onBackClick = onBackClick,
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -277,34 +278,6 @@ fun HungaryMap(
         }
     }
 }
-
-/**
- * Get the resource ID for a county's vector drawable
- */
-@Suppress("CyclomaticComplexMethod")
-private fun getCountyVectorRes(countyId: String): Int =
-    when (countyId) {
-        "YEAR_11" -> R.drawable.year_11
-        "YEAR_12" -> R.drawable.year_12
-        "YEAR_13" -> R.drawable.year_13
-        "YEAR_14" -> R.drawable.year_14
-        "YEAR_15" -> R.drawable.year_15
-        "YEAR_16" -> R.drawable.year_16
-        "YEAR_17" -> R.drawable.year_17
-        "YEAR_18" -> R.drawable.year_18
-        "YEAR_19" -> R.drawable.year_19
-        "YEAR_20" -> R.drawable.year_20
-        "YEAR_21" -> R.drawable.year_21
-        "YEAR_22" -> R.drawable.year_22
-        "YEAR_23" -> R.drawable.year_23
-        "YEAR_24" -> R.drawable.year_24
-        "YEAR_25" -> R.drawable.year_25
-        "YEAR_26" -> R.drawable.year_26
-        "YEAR_27" -> R.drawable.year_27
-        "YEAR_28" -> R.drawable.year_28
-        "YEAR_29" -> R.drawable.year_29
-        else -> R.drawable.bp
-    }
 
 @Preview
 @Composable

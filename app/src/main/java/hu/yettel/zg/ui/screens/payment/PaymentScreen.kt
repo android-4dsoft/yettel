@@ -51,6 +51,7 @@ fun PaymentScreen(
                 onBackClick = onBackClick,
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

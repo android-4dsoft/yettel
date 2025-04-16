@@ -23,6 +23,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.verify
@@ -35,10 +36,67 @@ class HighwayRepositoryImplTest {
     private lateinit var repository: HighwayRepositoryImpl
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    // Common mock objects
+    private lateinit var mockVignette: HighwayVignette
+    private lateinit var mockCategory: VehicleCategory
+    private lateinit var mockCounty: County
+    private lateinit var mockPayload: HighwayInfoPayload
+    private lateinit var mockResponse: ApiResponse<HighwayInfoPayload>
+    private lateinit var mockVehicleInfo: VehicleInfo
+
     @Before
     fun setup() {
         apiService = mock(YettelApiService::class.java)
         repository = HighwayRepositoryImpl(apiService, testDispatcher)
+
+        // Arrange
+        mockVignette = HighwayVignette(
+            vignetteType = listOf("DAY"),
+            vehicleCategory = "CAR",
+            cost = 5150.0,
+            transactionFee = 200.0,
+            sum = 5350.0,
+        )
+
+        mockCategory = VehicleCategory(
+            category = "CAR",
+            vignetteCategory = "D1",
+            name = LocalizedText(
+                hu = "Személygépjármű",
+                en = "Car",
+            ),
+        )
+
+        mockCounty = County(
+            id = "YEAR_11",
+            name = "Bács-Kiskun",
+        )
+
+        mockPayload = HighwayInfoPayload(
+            highwayVignettes = listOf(mockVignette),
+            vehicleCategories = listOf(mockCategory),
+            counties = listOf(mockCounty),
+        )
+
+        mockResponse = ApiResponse(
+            requestId = "12345678",
+            statusCode = "OK",
+            payload = mockPayload,
+        )
+
+        mockVehicleInfo = VehicleInfo(
+            requestId = "12345678",
+            statusCode = "OK",
+            internationalRegistrationCode = "H",
+            type = "CAR",
+            name = "Michael Scott",
+            plate = "abc-123",
+            country = LocalizedText(
+                hu = "Magyarország",
+                en = "Hungary",
+            ),
+            vignetteType = "D1",
+        )
     }
 
     // ===== getHighwayInfo Tests =====
@@ -46,41 +104,6 @@ class HighwayRepositoryImplTest {
     @Test
     fun `getHighwayInfo returns success with mapped data when API call succeeds`() =
         runTest {
-            // Arrange
-            val mockVignette = HighwayVignette(
-                vignetteType = listOf("DAY"),
-                vehicleCategory = "CAR",
-                cost = 5150.0,
-                transactionFee = 200.0,
-                sum = 5350.0,
-            )
-
-            val mockCategory = VehicleCategory(
-                category = "CAR",
-                vignetteCategory = "D1",
-                name = LocalizedText(
-                    hu = "Személygépjármű",
-                    en = "Car",
-                ),
-            )
-
-            val mockCounty = County(
-                id = "YEAR_11",
-                name = "Bács-Kiskun",
-            )
-
-            val mockPayload = HighwayInfoPayload(
-                highwayVignettes = listOf(mockVignette),
-                vehicleCategories = listOf(mockCategory),
-                counties = listOf(mockCounty),
-            )
-
-            val mockResponse = ApiResponse(
-                requestId = "12345678",
-                statusCode = "OK",
-                payload = mockPayload,
-            )
-
             `when`(apiService.getHighwayInfo()).thenReturn(Response.success(mockResponse))
 
             // Act
@@ -164,6 +187,28 @@ class HighwayRepositoryImplTest {
             assertTrue(error is NetworkException.NoConnectivityException)
         }
 
+    @Test
+    fun `getHighwayInfo returns cached data on subsequent calls`() =
+        runTest {
+            // First call - should hit the API
+            `when`(apiService.getHighwayInfo()).thenReturn(Response.success(mockResponse))
+            val result1 = repository.getHighwayInfo()
+
+            // Second call - should use cache
+            // We can verify this by changing the mock to throw an exception - if cache is working,
+            // the exception won't be triggered because the API won't be called
+            `when`(apiService.getHighwayInfo()).thenAnswer { throw IOException("Network error") }
+            val result2 = repository.getHighwayInfo()
+
+            // Assert both calls return the same data successfully
+            assertTrue(result1 is Result.Success)
+            assertTrue(result2 is Result.Success)
+            assertEquals((result1 as Result.Success).data, (result2 as Result.Success).data)
+
+            // Verify the API was only called once
+            verify(apiService, times(1)).getHighwayInfo()
+        }
+
     // ===== getVehicleInfo Tests =====
 
     @Test
@@ -221,6 +266,30 @@ class HighwayRepositoryImplTest {
             val error = (result as Result.Error).exception
             assertTrue(error is NetworkException.ServerException)
             assertEquals(500, (error as NetworkException.ServerException).statusCode)
+        }
+
+    @Test
+    fun `getVehicleInfo returns cached data on subsequent calls`() =
+        runTest {
+            // First call - should hit the API
+            `when`(apiService.getVehicleInfo()).thenReturn(Response.success(mockVehicleInfo))
+            val result1 = repository.getVehicleInfo()
+
+            // Second call - should use cache
+            // We can verify this by changing the mock to throw an exception - if cache is working,
+            // the exception won't be triggered because the API won't be called
+            `when`(apiService.getVehicleInfo()).thenAnswer {
+                throw IOException("Network error")
+            }
+            val result2 = repository.getVehicleInfo()
+
+            // Assert both calls return the same data successfully
+            assertTrue(result1 is Result.Success)
+            assertTrue(result2 is Result.Success)
+            assertEquals((result1 as Result.Success).data, (result2 as Result.Success).data)
+
+            // Verify the API was only called once
+            verify(apiService, times(1)).getVehicleInfo()
         }
 
     // ===== placeOrder Tests =====

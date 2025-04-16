@@ -25,13 +25,21 @@ class HighwayRepositoryImpl
         private val apiService: YettelApiService,
         @VisibleForTesting val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : HighwayRepository {
-        override suspend fun getHighwayInfo(): Result<HighwayInfo> =
-            try {
+        private var cachedHighwayInfo: HighwayInfo? = null
+        private var cachedVehicleInfo: Vehicle? = null
+
+        override suspend fun getHighwayInfo(): Result<HighwayInfo> {
+            cachedHighwayInfo?.let {
+                return Result.Success(it)
+            }
+            return try {
                 val response = apiService.getHighwayInfo()
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        Result.Success(body.toDomainModel())
+                        val domainModel = body.toDomainModel()
+                        cachedHighwayInfo = domainModel
+                        Result.Success(domainModel)
                     } else {
                         Result.Error(Exception("Response body is null"))
                     }
@@ -43,14 +51,20 @@ class HighwayRepositoryImpl
             ) {
                 handleException(e)
             }
+        }
 
-        override suspend fun getVehicleInfo(): Result<Vehicle> =
-            try {
+        override suspend fun getVehicleInfo(): Result<Vehicle> {
+            cachedVehicleInfo?.let {
+                return Result.Success(it)
+            }
+            return try {
                 val response = apiService.getVehicleInfo()
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        Result.Success(body.toDomainModel())
+                        val domainModel = body.toDomainModel()
+                        cachedVehicleInfo = domainModel
+                        Result.Success(domainModel)
                     } else {
                         Result.Error(Exception("Response body is null"))
                     }
@@ -62,6 +76,7 @@ class HighwayRepositoryImpl
             ) {
                 handleException(e)
             }
+        }
 
         override suspend fun placeOrder(orderRequest: OrderRequest): Result<OrderResponse> =
             try {

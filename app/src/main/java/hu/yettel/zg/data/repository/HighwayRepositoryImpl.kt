@@ -10,10 +10,7 @@ import hu.yettel.zg.domain.model.OrderRequest
 import hu.yettel.zg.domain.model.OrderResponse
 import hu.yettel.zg.domain.model.Result
 import hu.yettel.zg.domain.model.Vehicle
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.SerializationException
-import org.jetbrains.annotations.VisibleForTesting
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -23,7 +20,6 @@ class HighwayRepositoryImpl
     @Inject
     constructor(
         private val apiService: YettelApiService,
-        @VisibleForTesting val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : HighwayRepository {
         private var cachedHighwayInfo: HighwayInfo? = null
         private var cachedVehicleInfo: Vehicle? = null

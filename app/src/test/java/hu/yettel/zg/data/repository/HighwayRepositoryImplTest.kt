@@ -47,7 +47,7 @@ class HighwayRepositoryImplTest {
     @Before
     fun setup() {
         apiService = mock(YettelApiService::class.java)
-        repository = HighwayRepositoryImpl(apiService, testDispatcher)
+        repository = HighwayRepositoryImpl(apiService)
 
         // Arrange
         mockVignette = HighwayVignette(
@@ -103,7 +103,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getHighwayInfo returns success with mapped data when API call succeeds`() =
-        runTest {
+        runTest(testDispatcher) {
             `when`(apiService.getHighwayInfo()).thenReturn(Response.success(mockResponse))
 
             // Act
@@ -134,7 +134,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getHighwayInfo returns error when API call fails with HTTP error`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val errorResponse = Response.error<ApiResponse<HighwayInfoPayload>>(
                 404,
@@ -154,7 +154,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getHighwayInfo returns error when API call returns null body`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val nullBodyResponse = Response.success<ApiResponse<HighwayInfoPayload>>(null)
             `when`(apiService.getHighwayInfo()).thenReturn(nullBodyResponse)
@@ -170,7 +170,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getHighwayInfo returns network error when IOException occurs`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             // Instead of using thenThrow which doesn't work well with suspend functions,
             // we'll return a response that will cause the repository to throw during processing
@@ -189,7 +189,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getHighwayInfo returns cached data on subsequent calls`() =
-        runTest {
+        runTest(testDispatcher) {
             // First call - should hit the API
             `when`(apiService.getHighwayInfo()).thenReturn(Response.success(mockResponse))
             val result1 = repository.getHighwayInfo()
@@ -213,7 +213,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getVehicleInfo returns success with mapped data when API call succeeds`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val mockResponse = VehicleInfo(
                 requestId = "12345678",
@@ -250,7 +250,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getVehicleInfo returns error when API call fails`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val errorResponse = Response.error<VehicleInfo>(
                 500,
@@ -270,7 +270,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `getVehicleInfo returns cached data on subsequent calls`() =
-        runTest {
+        runTest(testDispatcher) {
             // First call - should hit the API
             `when`(apiService.getVehicleInfo()).thenReturn(Response.success(mockVehicleInfo))
             val result1 = repository.getVehicleInfo()
@@ -296,7 +296,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `placeOrder correctly maps request and returns response when API call succeeds`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val domainOrder = Order(
                 type = "DAY",
@@ -345,7 +345,7 @@ class HighwayRepositoryImplTest {
 
     @Test
     fun `placeOrder returns error when API call fails with bad request`() =
-        runTest {
+        runTest(testDispatcher) {
             // Arrange
             val domainOrder = Order(
                 type = "DAY",

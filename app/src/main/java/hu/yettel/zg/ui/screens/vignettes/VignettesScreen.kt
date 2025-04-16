@@ -132,8 +132,6 @@ fun VignettesContent(
     onShowNotAdjacentWarning: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(

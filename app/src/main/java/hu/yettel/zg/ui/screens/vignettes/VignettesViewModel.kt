@@ -8,6 +8,9 @@ import hu.yettel.zg.domain.model.HighwayInfo
 import hu.yettel.zg.domain.model.Result
 import hu.yettel.zg.domain.model.VignetteTypeEnum
 import hu.yettel.zg.domain.usecase.GetHighwayInfoUseCase
+import hu.yettel.zg.domain.usecase.GetSelectedCountiesUseCase
+import hu.yettel.zg.domain.usecase.SelectCountyUseCase
+import hu.yettel.zg.domain.usecase.UnselectCountyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,14 +39,15 @@ class VignettesViewModel
     @Inject
     constructor(
         private val getHighwayInfoUseCase: GetHighwayInfoUseCase,
+        private val getSelectedCountiesUseCase: GetSelectedCountiesUseCase,
+        private val unselectCountyUseCase: UnselectCountyUseCase,
+        private val selectCountyUseCase: SelectCountyUseCase,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<VignettesUiState>(VignettesUiState.Loading)
         val uiState: StateFlow<VignettesUiState> = _uiState.asStateFlow()
 
         private val vehicleCategory: String = savedStateHandle.get<String>(VignettesRoute.NAV_ARGUMENT) ?: ""
-
-        private val selectedCountyIds = mutableSetOf<String>()
 
         private var allCounties = listOf<VignetteCounty>()
 
@@ -94,6 +98,8 @@ class VignettesViewModel
                         vignette.types.filter { VignetteTypeEnum.isCountyType(it) }
                     }.distinct()
 
+                val previouslySelectedIds = getSelectedCountiesUseCase()
+
                 // Create VignetteCounty objects for each county
                 val countyVignettesList = countyIds
                     .mapNotNull { countyId ->
@@ -105,7 +111,7 @@ class VignettesViewModel
                                 id = countyId,
                                 name = countyInfo.name,
                                 cost = vignette.cost,
-                                isSelected = false,
+                                isSelected = previouslySelectedIds.contains(countyId),
                             )
                         } else {
                             null
@@ -115,13 +121,16 @@ class VignettesViewModel
                 // Combine and store all counties
                 allCounties = countyVignettesList
 
+                val selectedCounties = countyVignettesList.filter { it.isSelected }
+                val totalCost = selectedCounties.sumOf { it.cost }
+
                 _uiState.value = VignettesUiState.Success(
                     counties = allCounties,
-                    selectedCounties = emptyList(),
-                    totalCost = 0.0,
+                    selectedCounties = selectedCounties,
+                    totalCost = totalCost,
                 )
             } catch (
-                @Suppress("TooGenericExceptionCaught") e: Exception
+                @Suppress("TooGenericExceptionCaught") e: Exception,
             ) {
                 Timber.e(e, "Error processing highway info")
                 _uiState.value = VignettesUiState.Error("Failed to process county data: ${e.message}")
@@ -135,14 +144,16 @@ class VignettesViewModel
 
             val county = allCounties.find { it.id == countyId } ?: return
 
-            if (selectedCountyIds.contains(countyId)) {
-                selectedCountyIds.remove(countyId)
+            val selectedIds = getSelectedCountiesUseCase()
+
+            if (selectedIds.contains(countyId)) {
+                unselectCountyUseCase(countyId)
             } else {
                 // Check if adjacent before adding (if there are already selections)
-                if (selectedCountyIds.isNotEmpty()) {
+                if (selectedIds.isNotEmpty()) {
                     val isAdjacent = isCountyAdjacentToSelected(
                         countyId,
-                        selectedCountyIds.toList(),
+                        selectedIds.toList(),
                         getCountyAdjacencyMap(),
                     )
 
@@ -152,23 +163,22 @@ class VignettesViewModel
                     }
                 }
 
-                selectedCountyIds.add(countyId)
+                selectCountyUseCase(countyId)
             }
 
             updateSelectionState()
         }
 
-        fun getSelectedCountyIds(): List<String> = selectedCountyIds.toList()
-
         private fun updateSelectionState() {
             val currentState = _uiState.value as? VignettesUiState.Success ?: return
 
+            val selectedIds = getSelectedCountiesUseCase()
+
             val updatedCounties = allCounties.map { county ->
-                county.copy(isSelected = selectedCountyIds.contains(county.id))
+                county.copy(isSelected = selectedIds.contains(county.id))
             }
 
             val selectedCounties = updatedCounties.filter { it.isSelected }
-
             val totalCost = selectedCounties.sumOf { it.cost }
 
             _uiState.update {
@@ -180,5 +190,5 @@ class VignettesViewModel
             }
         }
 
-        fun isAnyCountySelected(): Boolean = selectedCountyIds.isNotEmpty()
+        fun isAnyCountySelected(): Boolean = getSelectedCountiesUseCase().isNotEmpty()
     }

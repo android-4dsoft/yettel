@@ -25,5 +25,4 @@ class VignettesViewModel
         val uiState: StateFlow<VignettesScreenUiState> = _uiState.asStateFlow()
 
         val category: String = savedStateHandle.get<String>(VignettesRoute.NAV_ARGUMENT) ?: ""
-
     }

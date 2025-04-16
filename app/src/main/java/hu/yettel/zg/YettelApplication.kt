@@ -1,8 +1,10 @@
 package hu.yettel.zg
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
+@HiltAndroidApp
 class YettelApplication : Application() {
     override fun onCreate() {
         super.onCreate()

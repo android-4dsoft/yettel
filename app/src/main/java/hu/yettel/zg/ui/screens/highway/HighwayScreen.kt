@@ -5,7 +5,6 @@
 package hu.yettel.zg.ui.screens.highway
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,11 +21,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.yettel.zg.R
+import hu.yettel.zg.domain.model.LocalizedName
+import hu.yettel.zg.domain.model.Vehicle
+import hu.yettel.zg.domain.model.VignetteTypeEnum
 import hu.yettel.zg.ui.designsystem.components.PrimaryButton
 import hu.yettel.zg.ui.designsystem.components.YettelTopAppBar
 import hu.yettel.zg.ui.designsystem.theme.Dimens
@@ -44,13 +54,21 @@ import hu.yettel.zg.ui.designsystem.theme.YettelShapes
 import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 import hu.yettel.zg.utils.StringUtil
 
-@Suppress("UnusedParameter")
 @Composable
 fun HighwayScreen(
-    onVignettesClick: () -> Unit,
     onYearlyVignettesClick: () -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
+    viewModel: HighwayViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState) {
+        if (uiState is HighwayUiState.Error) {
+            onShowSnackbar((uiState as HighwayUiState.Error).message, null)
+        }
+    }
+
     Scaffold(
         topBar = {
             YettelTopAppBar(
@@ -58,31 +76,102 @@ fun HighwayScreen(
                 onBackClick = { /* Handle back navigation if needed */ },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.surface,
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            VehicleCard(
-                plate = "ABC123",
-                owner = "Kovacs Istvan",
-            )
-            VignetteCard()
-            YearlyVignetteAction(
-                onCardClick = onYearlyVignettesClick,
-            )
+        when (uiState) {
+            is HighwayUiState.Loading -> {
+                LoadingState(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                )
+            }
+            is HighwayUiState.Error -> {
+                ErrorState(
+                    message = (uiState as HighwayUiState.Error).message,
+                    onRetry = { viewModel.loadData() },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                )
+            }
+            is HighwayUiState.Success -> {
+                val successState = uiState as HighwayUiState.Success
+                HighwayContent(
+                    state = successState,
+                    onVignetteTypeSelect = { viewModel.selectVignetteType(it) },
+                    onYearlyVignettesClick = onYearlyVignettesClick,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun VehicleCard(
-    plate: String,
-    owner: String,
+fun LoadingState(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun ErrorState(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    Column(
+        modifier = modifier.padding(Dimens.PaddingMedium),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = message,
+            style = Typography.bodyLarge,
+            color = MaterialTheme.colorScheme.error,
+        )
+        Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
+        PrimaryButton(
+            text = "Újra",
+            isEnabled = true,
+            onClick = onRetry,
+        )
+    }
+}
+
+@Composable
+fun HighwayContent(
+    state: HighwayUiState.Success,
+    onVignetteTypeSelect: (VignetteTypeEnum) -> Unit,
+    onYearlyVignettesClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        VehicleCard(vehicle = state.vehicle)
+        VignetteCard(
+            vignetteTypes = state.vignetteTypes,
+            selectedVignetteType = state.selectedVignetteType,
+            onVignetteTypeSelect = onVignetteTypeSelect,
+        )
+        if (state.hasYearlyVignette) {
+            YearlyVignetteAction(onCardClick = onYearlyVignettesClick)
+        }
+    }
+}
+
+@Composable
+fun VehicleCard(vehicle: Vehicle) {
     Card(
         modifier = Modifier
             .padding(
@@ -117,15 +206,14 @@ fun VehicleCard(
                 Column(
                     modifier = Modifier
                         .fillMaxHeight(),
-                    // .padding(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall), // Push top and bottom apart
                 ) {
                     Text(
-                        text = plate,
+                        text = vehicle.licensePlate,
                         style = Typography.bodyLarge.copy(color = MaterialTheme.colorScheme.secondary),
                     )
                     Text(
-                        text = owner,
+                        text = vehicle.ownerName,
                         style = Typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary),
                     )
                 }
@@ -135,7 +223,11 @@ fun VehicleCard(
 }
 
 @Composable
-fun VignetteCard() {
+fun VignetteCard(
+    vignetteTypes: List<VignetteType>,
+    selectedVignetteType: VignetteTypeEnum?,
+    onVignetteTypeSelect: (VignetteTypeEnum) -> Unit,
+) {
     Card(
         modifier = Modifier
             .padding(
@@ -156,21 +248,13 @@ fun VignetteCard() {
             modifier = Modifier.padding(horizontal = Dimens.PaddingSmall),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall),
         ) {
-            YearlyVignetteItem(
-                isSelected = true,
-                type = stringResource(R.string.yearly_vignette_monthly_type),
-                price = stringResource(R.string.yearly_vignette_monthly_price).toDouble(),
-            )
-            YearlyVignetteItem(
-                isSelected = false,
-                type = stringResource(R.string.yearly_vignette_weekly_type),
-                price = stringResource(R.string.yearly_vignette_weekly_price).toDouble(),
-            )
-            YearlyVignetteItem(
-                isSelected = false,
-                type = stringResource(R.string.yearly_vignette_daily_type),
-                price = stringResource(R.string.yearly_vignette_daily_price).toDouble(),
-            )
+            vignetteTypes.forEach { vignetteType ->
+                YearlyVignetteItem(
+                    isSelected = vignetteType.type == selectedVignetteType,
+                    vignetteType = vignetteType,
+                    onSelect = { onVignetteTypeSelect(vignetteType.type) },
+                )
+            }
         }
 
         PrimaryButton(
@@ -179,7 +263,9 @@ fun VignetteCard() {
                 .padding(Dimens.PaddingSmall),
             text = stringResource(R.string.btn_payment_lbl),
             isEnabled = true,
-            onClick = {},
+            onClick = {
+                // no - op
+            },
         )
     }
 }
@@ -187,9 +273,16 @@ fun VignetteCard() {
 @Composable
 fun YearlyVignetteItem(
     isSelected: Boolean,
-    type: String,
-    price: Double,
+    vignetteType: VignetteType,
+    onSelect: () -> Unit,
 ) {
+    val typeDisplayName = when (vignetteType.type) {
+        VignetteTypeEnum.DAY -> stringResource(R.string.yearly_vignette_daily_type)
+        VignetteTypeEnum.WEEK -> stringResource(R.string.yearly_vignette_weekly_type)
+        VignetteTypeEnum.MONTH -> stringResource(R.string.yearly_vignette_monthly_type)
+        else -> ""
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,11 +302,11 @@ fun YearlyVignetteItem(
     ) {
         CustomRadioButton(
             selected = isSelected,
-            onClick = {},
+            onClick = onSelect,
         )
         Spacer(modifier = Modifier.width(Dimens.PaddingSmall))
         Text(
-            text = type,
+            text = typeDisplayName,
             style = Typography.bodyLarge.copy(color = MaterialTheme.colorScheme.secondary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -221,7 +314,7 @@ fun YearlyVignetteItem(
         )
         Spacer(Modifier.width(Dimens.PaddingSmall))
         Text(
-            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(price)),
+            text = stringResource(R.string.yearly_vignette_price_pl, StringUtil.formatPrice(vignetteType.price)),
             style = Typography.headlineSmall.copy(color = MaterialTheme.colorScheme.secondary),
         )
     }
@@ -249,9 +342,7 @@ fun YearlyVignetteAction(onCardClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(
-                start = Dimens.PaddingSmall,
-                end = Dimens.PaddingSmall,
-                top = Dimens.PaddingSmall,
+                Dimens.PaddingSmall,
             ).fillMaxWidth()
             .height(Dimens.CardHeight)
             .clickable {
@@ -290,8 +381,17 @@ fun YearlyVignetteAction(onCardClick: () -> Unit) {
 fun VehicleCardPreview() {
     YettelZGTheme {
         VehicleCard(
-            plate = "ABC123",
-            owner = "Kovacs Istvan",
+            vehicle = Vehicle(
+                internationalCode = "H",
+                type = "CAR",
+                ownerName = "Kovacs Istvan",
+                licensePlate = "ABC123",
+                country = LocalizedName(
+                    hungarian = "Magyarország",
+                    english = "Hungary",
+                ),
+                vignetteType = "D1",
+            ),
         )
     }
 }
@@ -300,7 +400,30 @@ fun VehicleCardPreview() {
 @Composable
 fun VignetteCardPreview() {
     YettelZGTheme {
-        VignetteCard()
+        VignetteCard(
+            vignetteTypes = listOf(
+                VignetteType(
+                    type = VignetteTypeEnum.DAY,
+                    displayName = "D1",
+                    price = 5150.0,
+                    isSelected = false,
+                ),
+                VignetteType(
+                    type = VignetteTypeEnum.WEEK,
+                    displayName = "D1",
+                    price = 6400.0,
+                    isSelected = false,
+                ),
+                VignetteType(
+                    type = VignetteTypeEnum.MONTH,
+                    displayName = "D1",
+                    price = 10360.0,
+                    isSelected = true,
+                ),
+            ),
+            selectedVignetteType = VignetteTypeEnum.MONTH,
+            onVignetteTypeSelect = {},
+        )
     }
 }
 
@@ -310,8 +433,13 @@ fun YearlyVignetteItemPreview() {
     YettelZGTheme {
         YearlyVignetteItem(
             isSelected = true,
-            type = stringResource(R.string.yearly_vignette_monthly_type),
-            price = stringResource(R.string.yearly_vignette_monthly_price).toDouble(),
+            vignetteType = VignetteType(
+                type = VignetteTypeEnum.MONTH,
+                displayName = "D1",
+                price = 10360.0,
+                isSelected = true,
+            ),
+            onSelect = {},
         )
     }
 }
@@ -331,7 +459,17 @@ fun YearlyVignetteActionPreview() {
 fun HighwayScreenPreview() {
     YettelZGTheme {
         HighwayScreen(
-            onVignettesClick = {},
+            onYearlyVignettesClick = {},
+            onShowSnackbar = { _, _ -> false },
+        )
+    }
+}
+
+@Preview(name = "small-screen", device = "spec:width=360dp,height=640dp,dpi=480")
+@Composable
+fun HighwayScreenSmallPreview() {
+    YettelZGTheme {
+        HighwayScreen(
             onYearlyVignettesClick = {},
             onShowSnackbar = { _, _ -> false },
         )

@@ -121,7 +121,10 @@ fun HighwayContent(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(
+                horizontal = Dimens.PaddingSmall,
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         VehicleCard(vehicle = state.vehicle)
@@ -145,8 +148,6 @@ fun VehicleCard(vehicle: Vehicle) {
     Card(
         modifier = Modifier
             .padding(
-                start = Dimens.PaddingSmall,
-                end = Dimens.PaddingSmall,
                 top = Dimens.PaddingSmall,
             ).fillMaxWidth()
             .height(Dimens.CardHeight),
@@ -176,7 +177,7 @@ fun VehicleCard(vehicle: Vehicle) {
                 Column(
                     modifier = Modifier
                         .fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall), // Push top and bottom apart
+                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall),
                 ) {
                     Text(
                         text = vehicle.licensePlate.uppercase(),
@@ -201,8 +202,6 @@ fun VignetteCard(
     Card(
         modifier = Modifier
             .padding(
-                start = Dimens.PaddingSmall,
-                end = Dimens.PaddingSmall,
                 top = Dimens.PaddingSmall,
             ).fillMaxWidth(),
         shape = YettelShapes.medium,
@@ -267,7 +266,9 @@ fun YearlyVignetteItem(
                         MaterialTheme.colorScheme.surface
                     },
                 ),
-            ).padding(horizontal = Dimens.PaddingSmall),
+            ).clickable {
+                onSelect()
+            }.padding(horizontal = Dimens.PaddingSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CustomRadioButton(
@@ -312,12 +313,9 @@ fun YearlyVignetteAction(onCardClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(
-                Dimens.PaddingSmall,
+                vertical = Dimens.PaddingSmall,
             ).fillMaxWidth()
-            .height(Dimens.CardHeight)
-            .clickable {
-                onCardClick()
-            },
+            .height(Dimens.CardHeight),
         shape = YettelShapes.medium,
         elevation = CardDefaults.cardElevation(0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary),
@@ -325,7 +323,9 @@ fun YearlyVignetteAction(onCardClick: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(Dimens.PaddingSmall),
+                .clickable {
+                    onCardClick()
+                }.padding(Dimens.PaddingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

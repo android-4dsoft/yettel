@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Yettel ZG"
 include(":app")
- 
+

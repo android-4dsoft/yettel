@@ -7,41 +7,39 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import hu.yettel.zg.ui.theme.YettelZGTheme
+import androidx.compose.ui.graphics.Color
+import dagger.hilt.android.AndroidEntryPoint
+import hu.yettel.zg.naivgation.YettelNavGraph
+import hu.yettel.zg.ui.designsystem.theme.YettelZGTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             YettelZGTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.Transparent,
+                ) {
+                    val snackbarHostState = remember { SnackbarHostState() }
+
+                    Scaffold(
+                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                    ) { innerPadding ->
+                        YettelNavGraph(
+                            snackbarHostState = snackbarHostState,
+                            modifier = Modifier.padding(innerPadding),
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    YettelZGTheme {
-        Greeting("Android")
     }
 }

@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import hu.yettel.zg.R
 import hu.yettel.zg.ui.designsystem.theme.Dimens
 import hu.yettel.zg.ui.designsystem.theme.Typography
 
@@ -31,7 +33,7 @@ fun ErrorState(
         )
         Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
         PrimaryButton(
-            text = "Újra",
+            text = stringResource(R.string.retry_btn),
             isEnabled = true,
             onClick = onRetry,
         )

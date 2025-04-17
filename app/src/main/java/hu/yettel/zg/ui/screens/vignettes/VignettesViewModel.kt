@@ -55,7 +55,7 @@ class VignettesViewModel
             loadData()
         }
 
-        private fun loadData() {
+        fun loadData() {
             viewModelScope.launch {
                 getHighwayInfoUseCase().collect { result ->
                     when (result) {

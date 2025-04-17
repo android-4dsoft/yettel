@@ -95,7 +95,7 @@ fun VignettesScreen(
             is VignettesUiState.Error -> {
                 ErrorState(
                     message = (uiState as VignettesUiState.Error).message,
-                    onRetry = { /* Could add retry functionality */ },
+                    onRetry = { viewModel.loadData() },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),

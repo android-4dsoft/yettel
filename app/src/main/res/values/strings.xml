@@ -36,4 +36,6 @@
 
     <string name="error_not_adjacent">A kiválasztott vármegyék nem határosak egymással.</string>
 
+    <string name="retry_btn">Újra</string>
+
 </resources>

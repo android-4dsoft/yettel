@@ -19,12 +19,14 @@ fun NavController.navigateToHighway(navOptions: NavOptions? = null) = navigate(r
 
 fun NavGraphBuilder.highwayScreen(
     onYearlyVignettesClick: (String) -> Unit,
+    onCountryVignettePayment: () -> Unit,
     onBackClick: () -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
     composable(route = HighwayRoute.ROUTE) {
         HighwayScreen(
             onYearlyVignettesClick = onYearlyVignettesClick,
+            onCountryVignettePayment = onCountryVignettePayment,
             onBackClick = onBackClick,
             onShowSnackbar = onShowSnackbar,
         )

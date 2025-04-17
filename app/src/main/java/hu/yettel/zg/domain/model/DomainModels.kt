@@ -54,3 +54,9 @@ data class OrderResponse(
     val receivedOrders: List<Order>,
     val message: String?,
 )
+
+data class SelectedVignetteInfo(
+    val type: VignetteTypeEnum,
+    val category: String,
+    val price: Double,
+)

@@ -44,6 +44,9 @@ fun YettelNavGraph(
                     category = category,
                 )
             },
+            onCountryVignettePayment = {
+                navController.navigateToPayment()
+            },
             onBackClick = {
                 (context as? android.app.Activity)?.finish()
             },

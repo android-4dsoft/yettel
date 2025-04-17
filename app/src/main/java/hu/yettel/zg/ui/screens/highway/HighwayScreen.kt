@@ -58,6 +58,7 @@ import hu.yettel.zg.utils.StringUtil
 @Composable
 fun HighwayScreen(
     onYearlyVignettesClick: (String) -> Unit,
+    onBackClick: () -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
     viewModel: HighwayViewModel = hiltViewModel(),
 ) {
@@ -74,7 +75,7 @@ fun HighwayScreen(
         topBar = {
             YettelTopAppBar(
                 title = stringResource(R.string.module_title),
-                onBackClick = { /* Handle back navigation if needed */ },
+                onBackClick = onBackClick,
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -430,6 +431,7 @@ fun HighwayScreenPreview() {
     YettelZGTheme {
         HighwayScreen(
             onYearlyVignettesClick = {},
+            onBackClick = {},
             onShowSnackbar = { _, _ -> false },
         )
     }
@@ -441,6 +443,7 @@ fun HighwayScreenSmallPreview() {
     YettelZGTheme {
         HighwayScreen(
             onYearlyVignettesClick = {},
+            onBackClick = {},
             onShowSnackbar = { _, _ -> false },
         )
     }

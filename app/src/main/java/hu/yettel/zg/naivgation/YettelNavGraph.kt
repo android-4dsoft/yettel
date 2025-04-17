@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -31,6 +32,8 @@ fun YettelNavGraph(
     startDestination: String = HighwayRoute.ROUTE,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -40,6 +43,9 @@ fun YettelNavGraph(
                 navController.navigateToVignettes(
                     category = category,
                 )
+            },
+            onBackClick = {
+                (context as? android.app.Activity)?.finish()
             },
             onShowSnackbar = { message, actionLabel ->
                 showSnackbar(

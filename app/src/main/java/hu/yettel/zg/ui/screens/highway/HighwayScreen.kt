@@ -58,6 +58,7 @@ import hu.yettel.zg.utils.StringUtil
 @Composable
 fun HighwayScreen(
     onYearlyVignettesClick: (String) -> Unit,
+    onCountryVignettePayment: () -> Unit,
     onBackClick: () -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
     viewModel: HighwayViewModel = hiltViewModel(),
@@ -103,6 +104,11 @@ fun HighwayScreen(
                 HighwayContent(
                     state = successState,
                     onVignetteTypeSelect = { viewModel.selectVignetteType(it) },
+                    onCountryVignettePayment = {
+                        if (viewModel.prepareForPayment()) {
+                            onCountryVignettePayment()
+                        }
+                    },
                     onYearlyVignettesClick = onYearlyVignettesClick,
                     modifier = Modifier
                         .fillMaxSize()
@@ -117,6 +123,7 @@ fun HighwayScreen(
 fun HighwayContent(
     state: HighwayUiState.Success,
     onVignetteTypeSelect: (VignetteTypeEnum) -> Unit,
+    onCountryVignettePayment: () -> Unit,
     onYearlyVignettesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -133,6 +140,8 @@ fun HighwayContent(
             vignetteTypes = state.vignetteTypes,
             selectedVignetteType = state.selectedVignetteType,
             onVignetteTypeSelect = onVignetteTypeSelect,
+            onPaymentClick = onCountryVignettePayment,
+            isPaymentEnabled = state.canProceedToPayment,
         )
         if (state.hasYearlyVignette) {
             YearlyVignetteAction(
@@ -199,6 +208,8 @@ fun VignetteCard(
     vignetteTypes: List<VignetteType>,
     selectedVignetteType: VignetteTypeEnum?,
     onVignetteTypeSelect: (VignetteTypeEnum) -> Unit,
+    onPaymentClick: () -> Unit,
+    isPaymentEnabled: Boolean = false,
 ) {
     Card(
         modifier = Modifier
@@ -232,10 +243,8 @@ fun VignetteCard(
                 .fillMaxWidth()
                 .padding(Dimens.PaddingSmall),
             text = stringResource(R.string.btn_payment_lbl),
-            isEnabled = true,
-            onClick = {
-                // no - op
-            },
+            isEnabled = isPaymentEnabled,
+            onClick = onPaymentClick,
         )
     }
 }
@@ -393,6 +402,8 @@ fun VignetteCardPreview() {
                 ),
             ),
             selectedVignetteType = VignetteTypeEnum.MONTH,
+            isPaymentEnabled = true,
+            onPaymentClick = {},
             onVignetteTypeSelect = {},
         )
     }
@@ -431,6 +442,7 @@ fun HighwayScreenPreview() {
     YettelZGTheme {
         HighwayScreen(
             onYearlyVignettesClick = {},
+            onCountryVignettePayment = {},
             onBackClick = {},
             onShowSnackbar = { _, _ -> false },
         )
@@ -443,6 +455,7 @@ fun HighwayScreenSmallPreview() {
     YettelZGTheme {
         HighwayScreen(
             onYearlyVignettesClick = {},
+            onCountryVignettePayment = {},
             onBackClick = {},
             onShowSnackbar = { _, _ -> false },
         )

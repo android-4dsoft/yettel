@@ -11,6 +11,7 @@ import hu.yettel.zg.domain.model.Vignette
 import hu.yettel.zg.domain.model.VignetteTypeEnum
 import hu.yettel.zg.domain.usecase.GetHighwayInfoUseCase
 import hu.yettel.zg.domain.usecase.GetVehicleInfoUseCase
+import hu.yettel.zg.domain.usecase.SelectVignetteTypeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +40,7 @@ sealed interface HighwayUiState {
         val vignetteTypes: List<VignetteType>,
         val hasYearlyVignette: Boolean,
         override val selectedVignetteType: VignetteTypeEnum?,
+        val canProceedToPayment: Boolean = selectedVignetteType != null,
     ) : HighwayUiState
 }
 
@@ -58,6 +60,7 @@ class HighwayViewModel
     constructor(
         private val getHighwayInfoUseCase: GetHighwayInfoUseCase,
         private val getVehicleInfoUseCase: GetVehicleInfoUseCase,
+        private val selectVignetteTypeUseCase: SelectVignetteTypeUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<HighwayUiState>(HighwayUiState.Loading)
         val uiState: StateFlow<HighwayUiState> = _uiState.asStateFlow()
@@ -109,8 +112,28 @@ class HighwayViewModel
                 _uiState.value = currentState.copy(
                     vignetteTypes = updatedVignetteTypes,
                     selectedVignetteType = type,
+                    canProceedToPayment = true,
                 )
             }
+        }
+
+        fun prepareForPayment(): Boolean {
+            val currentState = _uiState.value
+            if (currentState is HighwayUiState.Success && currentState.selectedVignetteType != null) {
+                val selectedVignetteType = currentState.selectedVignetteType
+                val selectedVignette = currentState.vignetteTypes.find { it.type == selectedVignetteType }
+
+                if (selectedVignette != null && vehicle != null) {
+                    // Store the selected vignette info in the repository
+                    selectVignetteTypeUseCase(
+                        type = selectedVignette.type,
+                        category = vehicle!!.type,
+                        price = selectedVignette.price,
+                    )
+                    return true
+                }
+            }
+            return false
         }
 
         private fun processHighwayInfo(result: Result<HighwayInfo>) {
@@ -162,6 +185,7 @@ class HighwayViewModel
                 vignetteTypes = standardVignetteTypes,
                 hasYearlyVignette = hasYearlyVignette,
                 selectedVignetteType = standardVignetteTypes.firstOrNull { it.isSelected }?.type,
+                canProceedToPayment = standardVignetteTypes.any { it.isSelected },
             )
         }
 

@@ -85,13 +85,6 @@ dependencies {
     kspAndroidTest(libs.hilt.android.compiler)
 }
 
-tasks.formatKotlinMain {
-    exclude { it.file.path.contains("build/")}
-}
-
-tasks.lintKotlinMain {
-    exclude { it.file.path.contains("build/")}
-}
 
 tasks.register("formatAndLintKotlin") {
     dependsOn("formatKotlin", "lintKotlin")

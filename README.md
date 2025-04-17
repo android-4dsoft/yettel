@@ -11,7 +11,7 @@
 
 ### Setup Instructions
 
-1. **Clone the repository**
+1. **Clone the repository / Unzip the file if you have received it as zip file**
    ```bash
    git clone https://github.com/android-4dsoft/yettel
    cd yettel
